@@ -14,6 +14,7 @@ typedef struct ThreadArg {
     char *dirpath;
     const SearchCriteria *criteria;
     List *results;
+    Stats *stats;
 } ThreadArg;
 
 /* Prototyp der Thread-Funktion */
@@ -37,12 +38,16 @@ static int match_criteria(const char *path, const char *filename, const SearchCr
     return 1;
 }
 
-void search_directory(const char *dirpath, const SearchCriteria *criteria, List *results) {
+void search_directory(const char *dirpath, const SearchCriteria *criteria, List *results, Stats *stats) {
     DIR *dir = opendir(dirpath);
     if (!dir) {
         fprintf(stderr, "Cannot open directory: %s (%s)\n", dirpath, strerror(errno));
+        if (stats) stats_update_error(stats);
         return;
     }
+
+    /* Statistik: Verzeichnis wurde gescannt */
+    if (stats) stats_update_dir(stats);
 
     struct dirent *entry;
     pthread_t threads[256];
@@ -59,12 +64,16 @@ void search_directory(const char *dirpath, const SearchCriteria *criteria, List 
         struct stat sb;
         if (lstat(fullpath, &sb) == -1) {
             perror("lstat");
+            if (stats) stats_update_error(stats);
             continue;
         }
 
         if (S_ISDIR(sb.st_mode)) {
+            /* Für Verzeichnisse zählen wir auch als Datei-Eintrag */
+            if (stats) stats_update_file(stats);
             if (match_criteria(fullpath, entry->d_name, criteria, &sb)) {
                 list_add(results, fullpath);
+                if (stats) stats_update_match(stats);
             }
             if (criteria->use_threads) {
                 ThreadArg *targ = &thread_args[thread_count];
@@ -72,6 +81,7 @@ void search_directory(const char *dirpath, const SearchCriteria *criteria, List 
                 if (!targ->dirpath) { perror("strdup"); exit(EXIT_FAILURE); }
                 targ->criteria = criteria;
                 targ->results = results;
+                targ->stats = stats;
                 if (pthread_create(&threads[thread_count], NULL, thread_search_directory, targ) != 0) {
                     fprintf(stderr, "Failed to create thread for %s\n", fullpath);
                     free(targ->dirpath);
@@ -79,11 +89,13 @@ void search_directory(const char *dirpath, const SearchCriteria *criteria, List 
                     thread_count++;
                 }
             } else {
-                search_directory(fullpath, criteria, results);
+                search_directory(fullpath, criteria, results, stats);
             }
         } else {
+            if (stats) stats_update_file(stats);
             if (match_criteria(fullpath, entry->d_name, criteria, &sb)) {
                 list_add(results, fullpath);
+                if (stats) stats_update_match(stats);
             }
         }
     }
@@ -98,7 +110,7 @@ void search_directory(const char *dirpath, const SearchCriteria *criteria, List 
 
 void *thread_search_directory(void *arg) {
     ThreadArg *targ = (ThreadArg *)arg;
-    search_directory(targ->dirpath, targ->criteria, targ->results);
+    search_directory(targ->dirpath, targ->criteria, targ->results, targ->stats);
     free(targ->dirpath);
     return NULL;
 }
