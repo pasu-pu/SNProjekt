@@ -29,4 +29,3 @@ void list_add(List *list, const char *path);
 void list_print(const List *list);
 
 #endif
-

@@ -15,6 +15,8 @@ typedef struct ThreadArg {
     const SearchCriteria *criteria;
     List *results;
     Stats *stats;
+    int depth;
+    Logger *logger;
 } ThreadArg;
 
 /* Prototyp der Thread-Funktion */
@@ -22,8 +24,9 @@ void *thread_search_directory(void *arg);
 
 /* Prüft, ob ein Pfad den Suchkriterien entspricht */
 static int match_criteria(const char *path, const char *filename, const SearchCriteria *criteria, struct stat *sb) {
-    (void)path;  // Markiert 'path' als unbenutzt, um Warnungen zu unterdrücken
+    (void)path;  // Nicht genutzt
 
+    /* Filter nach Typ */
     if (criteria->type == 'f') {
         if (!S_ISREG(sb->st_mode))
             return 0;
@@ -31,6 +34,7 @@ static int match_criteria(const char *path, const char *filename, const SearchCr
         if (!S_ISDIR(sb->st_mode))
             return 0;
     }
+    /* Filter nach Namen */
     if (criteria->name != NULL) {
         if (strstr(filename, criteria->name) == NULL)
             return 0;
@@ -38,10 +42,15 @@ static int match_criteria(const char *path, const char *filename, const SearchCr
     return 1;
 }
 
-void search_directory(const char *dirpath, const SearchCriteria *criteria, List *results, Stats *stats) {
+void search_directory(const char *dirpath, const SearchCriteria *criteria, List *results, Stats *stats, int depth, Logger *logger) {
+    /* Falls max_depth gesetzt ist und die maximale Tiefe erreicht wurde */
+    if (criteria->max_depth != -1 && depth > criteria->max_depth) {
+        return;
+    }
+
     DIR *dir = opendir(dirpath);
     if (!dir) {
-        fprintf(stderr, "Cannot open directory: %s (%s)\n", dirpath, strerror(errno));
+        fprintf(stderr, "Kann Verzeichnis nicht öffnen: %s (%s)\n", dirpath, strerror(errno));
         if (stats) stats_update_error(stats);
         return;
     }
@@ -55,9 +64,15 @@ void search_directory(const char *dirpath, const SearchCriteria *criteria, List 
     ThreadArg thread_args[256];
 
     while ((entry = readdir(dir)) != NULL) {
+        /* Überspringe "." und ".." */
         if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
             continue;
-        
+
+        /* Option: überspringe versteckte Einträge */
+        if (criteria->skip_hidden && entry->d_name[0] == '.') {
+            continue;
+        }
+
         char fullpath[PATH_MAX];
         snprintf(fullpath, PATH_MAX, "%s/%s", dirpath, entry->d_name);
 
@@ -69,38 +84,61 @@ void search_directory(const char *dirpath, const SearchCriteria *criteria, List 
         }
 
         if (S_ISDIR(sb.st_mode)) {
-            /* Für Verzeichnisse zählen wir auch als Datei-Eintrag */
+            /* Zähle Verzeichnisse auch als Datei-Eintrag */
             if (stats) stats_update_file(stats);
             if (match_criteria(fullpath, entry->d_name, criteria, &sb)) {
                 list_add(results, fullpath);
                 if (stats) stats_update_match(stats);
+                if (criteria->verbose) {
+                    printf("Treffer (Verzeichnis): %s\n", fullpath);
+                }
+                if (logger) {
+                    char log_msg[PATH_MAX + 50];
+                    snprintf(log_msg, sizeof(log_msg), "Treffer (Verzeichnis): %s", fullpath);
+                    logger_log(logger, log_msg);
+                }
             }
+            /* Rekursive Suche in Unterverzeichnissen, evtl. in einem neuen Thread */
             if (criteria->use_threads) {
                 ThreadArg *targ = &thread_args[thread_count];
                 targ->dirpath = strdup(fullpath);
-                if (!targ->dirpath) { perror("strdup"); exit(EXIT_FAILURE); }
+                if (!targ->dirpath) {
+                    perror("strdup");
+                    exit(EXIT_FAILURE);
+                }
                 targ->criteria = criteria;
                 targ->results = results;
                 targ->stats = stats;
+                targ->depth = depth + 1;
+                targ->logger = logger;
                 if (pthread_create(&threads[thread_count], NULL, thread_search_directory, targ) != 0) {
-                    fprintf(stderr, "Failed to create thread for %s\n", fullpath);
+                    fprintf(stderr, "Fehler beim Erstellen eines Threads für %s\n", fullpath);
                     free(targ->dirpath);
                 } else {
                     thread_count++;
                 }
             } else {
-                search_directory(fullpath, criteria, results, stats);
+                search_directory(fullpath, criteria, results, stats, depth + 1, logger);
             }
         } else {
             if (stats) stats_update_file(stats);
             if (match_criteria(fullpath, entry->d_name, criteria, &sb)) {
                 list_add(results, fullpath);
                 if (stats) stats_update_match(stats);
+                if (criteria->verbose) {
+                    printf("Treffer (Datei): %s\n", fullpath);
+                }
+                if (logger) {
+                    char log_msg[PATH_MAX + 50];
+                    snprintf(log_msg, sizeof(log_msg), "Treffer (Datei): %s", fullpath);
+                    logger_log(logger, log_msg);
+                }
             }
         }
     }
     closedir(dir);
 
+    /* Warte auf alle gestarteten Threads */
     if (criteria->use_threads) {
         for (int i = 0; i < thread_count; i++) {
             pthread_join(threads[i], NULL);
@@ -110,8 +148,7 @@ void search_directory(const char *dirpath, const SearchCriteria *criteria, List 
 
 void *thread_search_directory(void *arg) {
     ThreadArg *targ = (ThreadArg *)arg;
-    search_directory(targ->dirpath, targ->criteria, targ->results, targ->stats);
+    search_directory(targ->dirpath, targ->criteria, targ->results, targ->stats, targ->depth, targ->logger);
     free(targ->dirpath);
     return NULL;
 }
-

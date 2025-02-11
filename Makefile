@@ -1,27 +1,25 @@
+# Makefile für das find-Projekt
+
 CC = gcc
-CFLAGS = -Wall -Wextra -pthread -std=c99 -O2 -D_POSIX_C_SOURCE=200809L
+CFLAGS = -Wall -Wextra -pthread -std=c99 -D_POSIX_C_SOURCE=200809L
+LDFLAGS = -pthread
 
-OBJS = main.o find.o list.o stats.o
+SRCS = main.c find.c stats.c list.c log.c
+OBJS = $(SRCS:.c=.o)
+TARGET = find
 
-all: myfind
+all: $(TARGET)
 
-myfind: $(OBJS)
-	$(CC) $(CFLAGS) -o myfind $(OBJS)
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LDFLAGS)
 
-main.o: main.c find.h list.h stats.h
-	$(CC) $(CFLAGS) -c main.c
-
-find.o: find.c find.h list.h stats.h
-	$(CC) $(CFLAGS) -c find.c
-
-list.o: list.c list.h
-	$(CC) $(CFLAGS) -c list.c
-
-stats.o: stats.c stats.h
-	$(CC) $(CFLAGS) -c stats.c
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	rm -f $(OBJS) myfind
+	rm -f $(OBJS) $(TARGET)
 
-.PHONY: all clean
+test: $(TARGET)
+	./$(TARGET) -path . -name test -verbose
 
+.PHONY: all clean test

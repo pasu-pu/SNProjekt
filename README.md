@@ -1,96 +1,94 @@
-# SNProjekt
 
-Dies ist die Implementierung eines limitierten Linux-Kommandos, das an die Funktionalität von `find` angelehnt ist.  
-Das Projekt wurde im Rahmen des Portfolio Assignments 05 im Modul System-oriented Programming entwickelt.
+# System-oriented Programming - Portfolio Assignment 05
 
-## Überblick
+## Projektbeschreibung
 
-Das Projekt demonstriert die Entwicklung einer größeren Software in C unter Einsatz folgender Konzepte:
-- **Dateisysteminteraktion:** Durchsuchen von Verzeichnissen und Abrufen von Dateiattributen mittels der Linux File API.
-- **Kommandozeilenargumente:** Verarbeitung von Benutzerparametern (argc, argv) zur Konfiguration der Programmfunktionalität.
-- **Dynamische Datenstrukturen:** Nutzung von verketteten Listen zur Verwaltung der Suchergebnisse.
-- **Multithreading:** Optionale parallele Verarbeitung von Verzeichnissen mit POSIX Threads und Synchronisation mittels Mutex.
-- **stdin/stdout:** Integration in Pipelines über Standard-Ein- und Ausgabe.
-- **Build-Prozess:** Kompilierung mittels gcc und einem Makefile zur Modularität und Einfachheit.
+Dieses Projekt implementiert einen eingeschränkten `find`-Befehl, der rekursiv Verzeichnisse durchsucht und Dateien sowie Verzeichnisse anhand verschiedener Suchkriterien filtert. Neben den Basisfunktionen bietet das Programm erweiterte Features wie parallele Verarbeitung (Threading), Logging, Begrenzung der Rekursionstiefe und das Überspringen versteckter Dateien.
 
-## Projektstruktur
+## Features
+
+- **Namenssuche:** Filtert Dateien/Verzeichnisse, deren Namen einen bestimmten Substring enthalten.
+- **Typfilter:** Wählen Sie zwischen Dateien (`f`) und Verzeichnissen (`d`).
+- **Threading:** Optionale parallele Verarbeitung von Unterverzeichnissen zur Verbesserung der Performance.
+- **Maximale Rekursionstiefe:** Mit `-maxdepth <n>` können Sie die Tiefe der Verzeichnissuche begrenzen.
+- **Hidden-Filter:** Mit `-skip-hidden` werden alle versteckten Dateien und Verzeichnisse (Namen, die mit `.` beginnen) übersprungen.
+- **Logging:** Treffer werden in eine Logdatei geschrieben, falls diese Option genutzt wird.
+- **Verbose-Ausgabe:** Mit `-verbose` werden zusätzliche Meldungen und Statistiken während der Ausführung ausgegeben.
+
+## Kommandozeilenoptionen
+
+| Option              | Beschreibung                                                                           | Standardwert/Anmerkung                   |
+|---------------------|----------------------------------------------------------------------------------------|------------------------------------------|
+| `-path <directory>` | Gibt das Startverzeichnis für die Suche an.                                            | Standard: `.` (aktuelles Verzeichnis)     |
+| `-name <pattern>`   | Filtert nach einem Substring im Dateinamen.                                            | Standard: kein Namensfilter              |
+| `-type <f|d>`       | Beschränkt die Suche auf Dateien (`f`) oder Verzeichnisse (`d`).                       | Standard: beide (kein Filter)            |
+| `-maxdepth <n>`     | Legt die maximale Tiefe der rekursiven Suche fest.                                       | Standard: `-1` (keine Begrenzung)          |
+| `-skip-hidden`      | Überspringt alle versteckten Dateien und Verzeichnisse (Namen beginnen mit `.`).         | Standard: deaktiviert (ohne Angabe aktiv)|
+| `-threads`          | Aktiviert die parallele Verarbeitung mittels Threads.                                  | Standard: deaktiviert                    |
+| `-log <filename>`   | Schreibt Treffer in die angegebene Logdatei.                                             | Standard: kein Logging                   |
+| `-verbose`          | Gibt zusätzliche Meldungen und Statistiken aus.                                          | Standard: deaktiviert                    |
+
+## Build und Ausführung
+
+### Build-Anleitung
+
+Öffnen Sie ein Terminal im Projektverzeichnis und führen Sie folgenden Befehl aus, um das Projekt zu kompilieren:
 
 ```
-.
-├── Makefile       # Makefile zum Bauen, Aufräumen und Testen des Projekts
-├── main.c         # Hauptprogramm
-├── find.c         # Implementierung der Suchlogik
-├── find.h         # Header für find.c
-├── list.c         # Implementierung der dynamischen Liste
-├── list.h         # Header für list.c
-└── README.md      # Diese Datei
+make all
 ```
 
-## Build-Anleitung
+Dies erzeugt das ausführbare Programm `find`.
 
-### Voraussetzungen
+### Ausführungsbeispiel
 
-- **GCC** (GNU Compiler Collection)
-- **GNU Make**
-- **POSIX Threads (pthread)**
+Um das Programm mit verschiedenen Optionen zu starten, können Sie beispielsweise folgenden Befehl verwenden:
 
-### Kompilierung
-
-Wechsle in das Projektverzeichnis und führe folgenden Befehl im Terminal aus:
-
-```bash
-make
+```
+./find -path /tmp -name test -type f -maxdepth 3 -skip-hidden -threads -log logfile.txt -verbose
 ```
 
-Dies erstellt das Executable (z. B. `myfind`).
-
-### Ausführen des Programms
-
-Das Programm kann mit verschiedenen Optionen gestartet werden. Die grundlegende Syntax lautet:
-
-```bash
-./myfind -path <Verzeichnis> -name <Muster> -type <f|d> [-threads]
-```
-
-**Beispiele:**
-
-- **Suche im aktuellen Verzeichnis** nach Dateien, deren Name den Substring `test` enthält, mit paralleler Verarbeitung:
-
-  ```bash
-  ./myfind -path . -name test -type f -threads
-  ```
-
-- **Standardaufruf** (ohne spezifische Parameter):
-
-  ```bash
-  ./myfind
-  ```
-
-### Aufräumen
-
-Um die erzeugten Objektdateien und das Executable zu löschen, führe im Terminal aus:
-
-```bash
-make clean
-```
+Dieser Befehl führt Folgendes aus:
+- Startet im Verzeichnis `/tmp`.
+- Filtert nach Dateien, deren Name den Substring `test` enthält.
+- Beschränkt die rekursive Suche auf 3 Ebenen.
+- Überspringt versteckte Dateien und Verzeichnisse.
+- Verwendet Threads für die parallele Suche.
+- Schreibt Treffer in die Logdatei `logfile.txt`.
+- Gibt zusätzliche Meldungen und Statistiken aus.
 
 ## Testfälle
 
-Das Projekt enthält grundlegende Testfälle, die über die Kommandozeilenargumente ausgeführt werden können.
-- **Manuelle Tests:** Starte das Programm mit verschiedenen Parameterkombinationen und überprüfe die Ausgabe.
-- **Pipelines:** Verwende das Programm in einer Pipeline, z. B.:
+Ein einfacher Testlauf kann mit folgendem Befehl gestartet werden:
 
-  ```bash
-  ./myfind -path . -name log | grep error
-  ```
+```
+make test
+```
 
-Weitere Testanweisungen findest du in der Projektdokumentation (sofern vorhanden).
+Dieser Befehl führt das Programm mit vordefinierten Optionen aus, um die Funktionalität zu überprüfen.
 
-## Lieferumfang
+## Verzeichnisstruktur
 
-- **Quellcode:** Alle C-Dateien und das Makefile befinden sich in diesem Repository.
-- **Testfälle:** Die grundlegenden Testfälle sind integriert.
-- **Screencast Video:** Ein Screencast-Video, in dem technische Aspekte der Implementierung erläutert werden, ist verfügbar unter:  
-  [Video-URL hier einfügen]
-- **Einreichungsdokument:** Zusätzlich wurde eine Textdatei erstellt, deren erste Zeile den Repository-URL, die zweite Zeile die Video-URL und die dritte Zeile eine kommagetrennte Liste der Immatrikulationsnummern der Teammitglieder enthält.
+- **`main.c`**  
+  Enthält das Hauptprogramm und die Verarbeitung der Kommandozeilenargumente.
+
+- **`find.c` / `find.h`**  
+  Implementiert die rekursive Verzeichnissuche und verarbeitet die Suchkriterien.
+
+- **`stats.c` / `stats.h`**  
+  Zuständig für die Erfassung von Suchstatistiken (Anzahl gescannter Verzeichnisse, Dateien, Treffer und Fehler).
+
+- **`list.c` / `list.h`**  
+  Implementiert eine dynamische, verkettete Liste zur Speicherung der gefundenen Dateipfade.
+
+- **`log.c` / `log.h`**  
+  Bietet Funktionen zur Ausgabe von Lognachrichten in eine Logdatei.
+
+- **`Makefile`**  
+  Steuert den Build-Prozess (Erzeugen der ausführbaren Datei, Aufräumen und Ausführen von Tests).
+
+## Abhängigkeiten
+
+- **Compiler:** GCC (mit Unterstützung für C99)
+- **Bibliotheken:** POSIX-Threads (pthread), Standard-C-Bibliotheken
 

@@ -38,11 +38,10 @@ void stats_update_error(Stats *stats) {
 }
 
 void stats_print(const Stats *stats) {
-    printf("\n--- Search Statistics ---\n");
-    printf("Directories scanned: %lu\n", stats->total_dirs);
-    printf("Files scanned: %lu\n", stats->total_files);
-    printf("Matches found: %lu\n", stats->total_matches);
-    printf("Errors encountered: %lu\n", stats->total_errors);
+    printf("\n--- Suchstatistiken ---\n");
+    printf("Verzeichnisse gescannt: %lu\n", stats->total_dirs);
+    printf("Dateien gescannt:       %lu\n", stats->total_files);
+    printf("Treffer gefunden:       %lu\n", stats->total_matches);
+    printf("Fehler aufgetreten:     %lu\n", stats->total_errors);
     printf("-------------------------\n");
 }
-

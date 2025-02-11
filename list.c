@@ -44,7 +44,7 @@ void list_add(List *list, const char *path) {
         exit(EXIT_FAILURE);
     }
     node->next = NULL;
-    
+
     pthread_mutex_lock(&list->mutex);
     if (list->tail == NULL) {
         list->head = list->tail = node;
@@ -64,4 +64,3 @@ void list_print(const List *list) {
         current = current->next;
     }
 }
-
