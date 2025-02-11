@@ -1,0 +1,7 @@
+# Build-Artefakte
+*.o
+myfind
+
+# Verzeichnisse mit generierten Dateien
+results/
+stats/
