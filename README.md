@@ -21,7 +21,7 @@ Dieses Projekt implementiert einen eingeschränkten `find`-Befehl, der rekursiv 
 |---------------------|----------------------------------------------------------------------------------------|------------------------------------------|
 | `-path <directory>` | Gibt das Startverzeichnis für die Suche an.                                            | Standard: `.` (aktuelles Verzeichnis)     |
 | `-name <pattern>`   | Filtert nach einem Substring im Dateinamen.                                            | Standard: kein Namensfilter              |
-| `-type <f|d>`       | Beschränkt die Suche auf Dateien (`f`) oder Verzeichnisse (`d`).                       | Standard: beide (kein Filter)            |
+| `-type <f\|d>`      | Beschränkt die Suche auf Dateien (`f`) oder Verzeichnisse (`d`).                       | Standard: beide (kein Filter)            |
 | `-maxdepth <n>`     | Legt die maximale Tiefe der rekursiven Suche fest.                                       | Standard: `-1` (keine Begrenzung)          |
 | `-skip-hidden`      | Überspringt alle versteckten Dateien und Verzeichnisse (Namen beginnen mit `.`).         | Standard: deaktiviert (ohne Angabe aktiv)|
 | `-threads`          | Aktiviert die parallele Verarbeitung mittels Threads.                                  | Standard: deaktiviert                    |
