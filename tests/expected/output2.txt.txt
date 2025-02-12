@@ -1,0 +1,3 @@
+Treffer (Verzeichnis): tests/test_input/test_dir1
+Treffer (Datei): tests/test_input/test_dir1/test_file1.txt
+Treffer (Datei): tests/test_input/normal_dir/test_file2.txt
