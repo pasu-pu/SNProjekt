@@ -1,6 +1,10 @@
 #!/bin/bash
 # run_tests.sh - automatisierte Tests für das 'find'-Projekt
-# Hinweis: Dieses Skript liegt im Verzeichnis "tests" und geht davon aus, dass die ausführbare Datei "find" im übergeordneten Verzeichnis liegt.
+# Hinweis: Dieses Skript liegt im Verzeichnis "tests" und setzt das Arbeitsverzeichnis
+# auf den Ordner "tests", sodass der relative Pfad zu ../find korrekt aufgelöst wird.
+
+# Arbeitsverzeichnis auf das Verzeichnis des Skripts setzen
+cd "$(dirname "$0")"
 
 # Pfad zur ausführbaren Datei (im Projektstamm)
 FIND_EXEC="../find"
@@ -11,7 +15,7 @@ if [ ! -x "$FIND_EXEC" ]; then
     exit 1
 fi
 
-# Definiere die Testeingabe- und erwarteten Ausgabeverzeichnisse (relativ zu diesem Skript, also im tests/ Ordner)
+# Definiere die Testeingabe- und erwarteten Ausgabeverzeichnisse (relativ zu diesem Skript)
 TEST_INPUT_DIR="test_input"
 EXPECTED_DIR="expected"
 
