@@ -20,7 +20,6 @@ clean:
 	rm -f $(OBJS) $(TARGET)
 
 test: $(TARGET)
-    cd tests && ./run_tests.sh
-
+	./tests/run_tests.sh
 
 .PHONY: all clean test
