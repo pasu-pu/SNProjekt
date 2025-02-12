@@ -34,7 +34,7 @@ Dieses Projekt implementiert einen eingeschränkten Linux-`find`-Befehl in C. Da
 |---------------------|------------------------------------------------------------------------------|---------------------------------------|
 | `-path <directory>` | Gibt das Startverzeichnis für die Suche an.                                  | Standard: `.` (aktuelles Verzeichnis)  |
 | `-name <pattern>`   | Filtert nach einem Substring im Dateinamen.                                  | Kein Filter (falls nicht angegeben)    |
-| `-type <f|d>`       | Beschränkt die Suche auf Dateien (`f`) oder Verzeichnisse (`d`).             | Standard: beide (kein Filter)          |
+| `-type <f\|d>`       | Beschränkt die Suche auf Dateien (`f`) oder Verzeichnisse (`d`).             | Standard: beide (kein Filter)          |
 | `-maxdepth <n>`     | Legt die maximale Tiefe der rekursiven Suche fest.                           | Standard: `-1` (keine Begrenzung)        |
 | `-skip-hidden`      | Überspringt versteckte Dateien und Verzeichnisse (Namen beginnen mit `.`).     | Standard: deaktiviert                  |
 | `-threads`          | Aktiviert die parallele Verarbeitung mittels Threads.                      | Standard: deaktiviert                  |
