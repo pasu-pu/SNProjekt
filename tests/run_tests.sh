@@ -3,10 +3,15 @@
 # Dieses Skript führt mehrere Testfälle aus, um die Funktionalität des Programms zu prüfen.
 
 # Prüfe, ob das ausführbare Programm 'find' existiert.
-if [ ! -x "./find" ]; then
+
+if [ ! -x "../find" ]; then
     echo "Fehler: Das Programm 'find' wurde nicht gefunden. Bitte baue das Projekt mit 'make'."
     exit 1
 fi
+
+# Dann kannst du den Befehl mit dem korrekten Pfad ausführen:
+../find -path "tests/test_input" -name "test" -verbose > "tests/output1.txt"
+
 
 # Verzeichnis für Testeingaben (muss existieren)
 TEST_INPUT_DIR="tests/test_input"
