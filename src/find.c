@@ -89,9 +89,6 @@ void search_directory(const char *dirpath, const SearchCriteria *criteria, List 
             if (match_criteria(fullpath, entry->d_name, criteria, &sb)) {
                 list_add(results, fullpath);
                 if (stats) stats_update_match(stats);
-                if (criteria->verbose) {
-                    printf("Treffer (Verzeichnis): %s\n", fullpath);
-                }
                 if (logger) {
                     char log_msg[PATH_MAX + 50];
                     snprintf(log_msg, sizeof(log_msg), "Treffer (Verzeichnis): %s", fullpath);
@@ -125,9 +122,6 @@ void search_directory(const char *dirpath, const SearchCriteria *criteria, List 
             if (match_criteria(fullpath, entry->d_name, criteria, &sb)) {
                 list_add(results, fullpath);
                 if (stats) stats_update_match(stats);
-                if (criteria->verbose) {
-                    printf("Treffer (Datei): %s\n", fullpath);
-                }
                 if (logger) {
                     char log_msg[PATH_MAX + 50];
                     snprintf(log_msg, sizeof(log_msg), "Treffer (Datei): %s", fullpath);
