@@ -1,6 +1,8 @@
-test_input/test_dir1
-test_input/normal_dir/test_file2.txt
-test_input/test_dir1/test_file1.txt
+----- Gefundene Treffer -----
+  - test_input/test_dir1
+  - test_input/test_dir1/test_file1.txt
+  - test_input/normal_dir/test_file2.txt
+----- Ende der Trefferliste -----
 
 --- Suchstatistiken ---
 Verzeichnisse gescannt: 3
