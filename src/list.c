@@ -58,9 +58,12 @@ void list_add(List *list, const char *path) {
 void list_print(const List *list) {
     if (!list)
         return;
+    printf("----- Gefundene Treffer -----\n");
     Node *current = list->head;
     while (current) {
-        printf("%s\n", current->path);
+        printf("  - %s\n", current->path);
         current = current->next;
     }
+    printf("----- Ende der Trefferliste -----\n");
 }
+
