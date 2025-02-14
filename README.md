@@ -84,23 +84,28 @@ Dies führt das Skript `tests/run_tests.sh` aus, welches die Ausgabe des Program
 ## Verzeichnisstruktur
 
 ```
-project-root/
-├── README.md         # Diese Datei: Enthält Projektbeschreibung, Build- und Ausführungsanweisungen
-├── Makefile          # Build-Skript (verwendet GCC zur Kompilierung)
-├── src/              # Quellcode des Projekts
-│   ├── main.c        # Hauptprogramm: Kommandozeilenargumentverarbeitung und Programmstart
-│   ├── find.c        # Implementierung der rekursiven Verzeichnissuche
-│   ├── find.h        # Header für find.c
-│   ├── list.c        # Implementierung einer dynamischen, verketteten Liste zur Speicherung von Suchergebnissen
-│   ├── list.h        # Header für list.c
-│   ├── stats.c       # Erfassung von Suchstatistiken
-│   ├── stats.h       # Header für stats.c
-│   ├── log.c         # Logging-Funktionalität
-│   └── log.h         # Header für log.c
-└── tests/            # Testressourcen und Testskripte
-    ├── run_tests.sh  # Shell-Skript zur Ausführung automatisierter Tests
-    ├── test_input/   # Beispielverzeichnisse und Dateien als Eingabedaten für Tests
-    └── expected/     # Erwartete Ausgabedateien für die Testfälle
+SNProjekt/
+├── README.md         # Projektbeschreibung, Build- und Ausführungsanweisungen
+├── .gitignore        # Definiert, welche Dateien/Ordner von Git ignoriert werden sollen
+├── findProject/      # Enthält den C-Projektcode
+│   ├── Makefile      # Build-Skript (verwendet GCC zur Kompilierung)
+│   ├── src/          # Quellcode des Projekts
+│   │   ├── main.c        # Hauptprogramm: Kommandozeilenargumentverarbeitung und Programmstart
+│   │   ├── find.c        # Implementierung der rekursiven Verzeichnissuche
+│   │   ├── find.h        # Header für find.c
+│   │   ├── list.c        # Implementierung einer dynamischen, verketteten Liste zur Speicherung von Suchergebnissen
+│   │   ├── list.h        # Header für list.c
+│   │   ├── stats.c       # Erfassung von Suchstatistiken
+│   │   ├── stats.h       # Header für stats.c
+│   │   ├── log.c         # Logging-Funktionalität
+│   │   └── log.h         # Header für log.c
+│   └── tests/        # Testressourcen und Testskripte
+│       ├── run_tests.sh  # Shell-Skript zur Ausführung automatisierter Tests
+│       ├── test_input/   # Beispielverzeichnisse und Dateien als Eingabedaten für Tests
+│       └── expected/     # Erwartete Ausgabedateien für die Testfälle
+└── Video/            # Enthält das Video
+    └── Video_SN.mp4
+
 ```
 
 ## Abhängigkeiten
