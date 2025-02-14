@@ -45,7 +45,8 @@ Dieses Projekt implementiert einen eingeschränkten Linux-`find`-Befehl in C. Da
 
 ### Build-Anleitung
 
-Öffnen Sie ein Terminal im Projektstammverzeichnis und führen Sie den folgenden Befehl aus:
+
+Öffnen Sie ein Terminal im Projekt findProject Verzeichniss und führen Sie den folgenden Befehl aus:
 
 ```bash
 make all
